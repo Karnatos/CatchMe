@@ -42,8 +42,8 @@ regions:
   myWorldGuardRegion1:
     flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X}
     catchgroups: [myGroup1, myGroup2]
-  myWorldGuardRegion1:
-	flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X}
+  myWorldGuardRegion2:
+    flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X}
     catchgroups: [myGroup1, myGroup3, myGroup4]
 
 Y is 'allow' or 'deny'
