@@ -22,9 +22,9 @@ public class CatchLang {
 	public static final String sys_puglinDisabled = "Plugin disabled";
 	public static final String sys_worldguardDisabled = "WorldGuard disabled, CatchMe can't be used";
 	public static final String sys_catchmeEnabled = "[CatchMe] v"+version+" Enabled";	
-	public static final String sys_failWorldguardConfigRegion = "Failed to load WorldGuard region config file";
+	public static final String sys_failCatchConfigRegion = "Failed to load CatchMe region config file";
 	public static final String sys_failWorldguardConfigUsers = "Failed to load WorldGuard users config file";
-	public static final String sys_loadWorldguardRegionSuccess = "Load regions from WorldGuard succeed";
+	public static final String sys_loadCatchRegionSuccess = "Load catching areas succeed";
 	public static final String sys_group = "group";
 	public static final String sys_control = "controls";
 	public static final String sys_addMoneyToGroup = "Add money to group";

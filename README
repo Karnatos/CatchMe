@@ -4,62 +4,75 @@
 - By Scorpia 'Karnatos'                 -
 -----------------------------------------
 
-This PvP plugin allows you to define a WorldGuard region as a catching area.
-A catching area is a region where two or more enemy groups (from Permissions) can try to capture it.
-If a group stands alone for a configurable time, it will capture it.
-Each player of this group will earn money (iConomy) at each determined period because of this capture.
+This is a PvP in which you have to gain control of an area !
 
-----------------
-- Dependencies -
-----------------
+If your group controls an area, you will be periodically reward with money.
+But, be careful ! Any other group can steel this area from you.
 
-CraftBukkit #677+
-Permissions 2.7
-WorldGuard 4.0
-iConomy 4.6.5
+In details, you or one of your group's mate can stand in an area defined as a WorldGuard region.
+If alone during a few time in the region, your group will be known as controlling this area and will periodically earn money in the iConomy system.
+
+Let one enemy enter during the catpure phase and it will be cancelled.
+Also, the area will automatically be neutral after a fixed duration.
+
+Most datas are configurable.
 
 ------------
 - Features - 
 ------------
 
-- The Catching Area
+*********************
+* The Catching Area *
+*********************
 
-It is defined by:
-* duration : number of periods (default value: 12)
-* period : delay in seconds before earning money (default value: 900)
+- How to define it ? 
+
+A catching area is defined with 'flags':
+
+* duration : number of periods before becoming neutral(default value: 12)
+* period : delay in seconds between each earn money (default value: 900)
 * time-catch : delay in seconds before capturing the area (default value: 30)
-* money-amount : money earned (default value: 5)
+* money-amount : money earned after each period (default value: 5)
+
+And 'catchgroups' which will be the only groups allowed to capture the area.
  
-To define it, edit 'WorldGuard/worlds/your-world/regions.yml' (replace 'your-world' by your current world name).
-* In 'flags' add the following parameters: 
-  * catching-area: allow (REQUIRED)
-  * catching-duration: X
-  * catching-period: X
-  * catching-time-catch: X
-  * catching-money-amount: X
-  X is a positive integer value (more than 0).
-  If you don't specify one of theses flags, the default value will be used.
+To define it, edit 'catchme/worlds/your-world/regions.yml' (replace 'your-world' by your current world name), or create it if it doesn't exist.
+The file is structured as follows :
+regions:
+  myWorldGuardRegion1:
+    flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X}
+    catchgroups: [myGroup1, myGroup2]
+  myWorldGuardRegion1:
+	flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X}
+    catchgroups: [myGroup1, myGroup3, myGroup4]
+
+Y is 'allow' or 'deny'
+X is a positive integer value.
+If you don't specify one of theses flags, the default value will be used.
+
+For 'catching-duration', if you use 0 as value, the duration will be infinite.
 
 * Example:
 regions:
-  myWorldEditRegion:
-    min: {z: 0.0, y: 0.0, x: 0.0}
-    flags: {pvp: deny, tnt: deny, catching-area: allow, catching-period: 10, catching-time-catch: 5}
+  totoReg:
+    flags: {catching-area: allow, catching-period: 10, catching-time-catch: 5}
     catchgroups: [myGroup1, myGroup2]
-    max: {z: 40.0, y: 20.0, x: 30.0}
-    priority: 0
-    type: cuboid
-    owners:
-      players: [myPlayer]
-    members: {}
+  titi:
+    flags: {catching-area: deny, catching-duration: 30}
 
-This region 'myWorldEditRegion' will be a catching area for 12 periods of 10 seconds.
-If 'myGroup1' or 'myGroup2' stays in it during 5 seconds (alone), it will capture it.
-If during the catching delay, an other allowed group enter the area, catching is cancelled.
-An other allowed group can capture it at any time.
+In this example, the region 'totoReg' will be an enabled catching area with these caracteristics :
+duration: 12 periods (default)
+period: 10 seconds
+time-catch: 5 seconds
+money-amount: 5 (default)
 
+The region 'titi' will not be a catching area because of 'catching-area: deny'.
 
-- The Lang file
+By default, a WorldGuard region not explicitly tagged (in CatchMe regions file) with 'catching-area: allow' will be considered as 'deny'
+
+*****************
+* The Lang file *
+*****************
 
 You can redefine all ingame messages.
 To do that, create path '/catchme/lang/' (if not exists) in directory 'plugin'.
@@ -78,19 +91,44 @@ You don't have to specify all lines, just the ones you want to change the defaul
 
 Then, you just have to replace the sample text by whatever you want.
 
+---------
+- Notes -
+---------
 
-IMPORTANT : All file modifications need a reboot to be taken in count.
+- All file modifications need a reload of all plugins or a reboot to be taken in count.
+
+- If you have a problem with the YAML (files with .yml) syntax, check out this website http://yaml-online-parser.appspot.com/
+
+----------------
+- Dependencies -
+----------------
+
+CraftBukkit #677+
+Permissions 2.7
+WorldGuard 4.0
+iConomy 4.6.5
 
 
-- Download CatchMe
-https://github.com/Karnatos/CatchMe/build
+--------------------
+- Download CatchMe -
+--------------------
+
+https://github.com/Karnatos/CatchMe/tree/master/build
 
 
-- Source available
+--------------------
+- Source available -
+--------------------
+
 https://github.com/Karnatos/CatchMe
+
 
 -------------
 - Changelog -
 -------------
+- Version 0.2
+* Change catch area flags and group in a proper file (catchme/worlds/"my-world"/regions.yml)
+* Add infinite duration
+* Re-structured file README
 - Version 0.1
 * First Release

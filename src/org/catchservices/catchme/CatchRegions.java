@@ -139,28 +139,27 @@ public class CatchRegions {
 			
 			/* search region's flags */
 			
-			File file = new File(worldguard.getDataFolder(), "worlds" + File.separator + world.getName() + File.separator + "regions.yml");
+			File file = new File(parent.getDataFolder(), "worlds" + File.separator + world.getName() + File.separator + "regions.yml");
 			Configuration config = new Configuration(file);
 
 			try {
 				config.load();
 			} catch (IOException e) {
-				CatchLang.sysMess(CatchLang.sys_failWorldguardConfigRegion);
+				CatchLang.sysMess(CatchLang.sys_failCatchConfigRegion);
 				return;
 			}
 
-			ConfigurationNode regionsData = config.getNode("regions");
+			Map<String, ConfigurationNode> regionsData = config.getNodes("regions");
 			if (regionsData != null) {
 			
-				Map<String, ProtectedRegion> regions = regionmanager.getRegions();
-			
-				Iterator<ProtectedRegion> ipr = regions.values().iterator();
-			
-				while(ipr.hasNext()) {
+				for(String regname : regionsData.keySet()) {
 				
-					ProtectedRegion region = ipr.next();
-
-					ConfigurationNode regionData = regionsData.getNode(region.getId());
+					ProtectedRegion region = regionmanager.getRegion(regname);
+			
+					if(region == null)
+						break;
+						
+					ConfigurationNode regionData = regionsData.get(regname);
 					ConfigurationNode flagsData = regionData.getNode("flags");
 				
 					if(flagsData != null) {
@@ -191,7 +190,7 @@ public class CatchRegions {
 			}
 		}
 		
-		CatchLang.sysMess(CatchLang.sys_loadWorldguardRegionSuccess);
+		CatchLang.sysMess(CatchLang.sys_loadCatchRegionSuccess);
 	}
 	
 	public List<String> getPlayersGroup(String actualGroup) {

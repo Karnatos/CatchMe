@@ -222,7 +222,7 @@ public class CatchArea {
 	public void timerCompleteCaught() {
 		actual_duration++;
 		
-		if(actual_duration <= duration) {
+		if(duration == 0 || actual_duration <= duration) {
 			addMoneyToPlayers();
 		}
 		else
