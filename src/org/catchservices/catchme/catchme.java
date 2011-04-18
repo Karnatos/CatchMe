@@ -11,9 +11,11 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class catchme extends JavaPlugin {
 	
+	public static boolean loadSuccess = true;
+	
 	private final CatchPlayerListener playerListener = new CatchPlayerListener(this);
 	private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
-	private CatchRegions catchregions;
+	private CatchRegions catchregions = null;
 
 	// NOTE: There should be no need to define a constructor any more for more info on moving from
 	// the old constructor see:
@@ -53,7 +55,13 @@ public class catchme extends JavaPlugin {
 	        catchregions = new CatchRegions(wgp, this);
 	        CatchLang.loadLangFile(this);
 	        
-	        CatchLang.sysMess(CatchLang.sys_catchmeEnabled);
+	        if(loadSuccess)
+	        	CatchLang.sysMess(CatchLang.sys_catchmeEnabled);
+	        else
+	        {
+	        	CatchLang.sysMess(CatchLang.sys_puglinDisabled);
+	        	catchregions = null;
+	        }
 		}
 
 	    public boolean isDebugging(final Player player) {

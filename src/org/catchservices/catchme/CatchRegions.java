@@ -140,11 +140,24 @@ public class CatchRegions {
 			/* search region's flags */
 			
 			File file = new File(parent.getDataFolder(), "worlds" + File.separator + world.getName() + File.separator + "regions.yml");
+			
+			if(!file.exists()) {
+				CatchLang.sysMess(parent.getDataFolder() + File.separator + "worlds" + File.separator + world.getName() 
+						+ File.separator + "regions.yml" + " "+ CatchLang.sys_notFound);
+				continue;
+			}
+			else
+			{
+				CatchLang.sysMess(parent.getDataFolder() + File.separator + "worlds" + File.separator + world.getName() 
+						+ File.separator + "regions.yml" + " "+ CatchLang.sys_found);
+			}
+			
 			Configuration config = new Configuration(file);
 
 			try {
 				config.load();
 			} catch (IOException e) {
+				catchme.loadSuccess = false;
 				CatchLang.sysMess(CatchLang.sys_failCatchConfigRegion);
 				return;
 			}

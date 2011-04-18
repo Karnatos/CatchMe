@@ -21,7 +21,7 @@ public class CatchLang {
 	/* System messages  */
 	public static final String sys_puglinDisabled = "Plugin disabled";
 	public static final String sys_worldguardDisabled = "WorldGuard disabled, CatchMe can't be used";
-	public static final String sys_catchmeEnabled = "[CatchMe] v"+version+" Enabled";	
+	public static final String sys_catchmeEnabled = " v"+version+" Enabled";	
 	public static final String sys_failCatchConfigRegion = "Failed to load CatchMe region config file";
 	public static final String sys_failWorldguardConfigUsers = "Failed to load WorldGuard users config file";
 	public static final String sys_loadCatchRegionSuccess = "Load catching areas succeed";
@@ -31,6 +31,8 @@ public class CatchLang {
 	public static final String sys_failLangConfigLoad = "Failed to load lang config file";
 	public static final String sys_langConfigLoaded = "Lang config file loaded";
 	public static final String sys_failLangFoundFile = "Lang file not found";
+	public static final String sys_notFound = "not found";
+	public static final String sys_found = "found";
 	
 	/* Users messages */
 	public static final String usr_receiveMoney = "You receive";

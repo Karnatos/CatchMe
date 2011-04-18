@@ -1,10 +1,10 @@
 -----------------------------------------
-- CatchMe - The Catching Regions plugin -
-- Version: v0.2                         -
+- CatchMe - The Capture Region plugin -
+- Version: v0.2.1                         -
 - By Scorpia 'Karnatos'                 -
 -----------------------------------------
 
-This is a PvP in which you have to gain control of an area !
+This is a PvP plugin in which you have to gain control of an area !
 
 If your group controls an area, you will be periodically reward with money.
 But, be careful ! Any other group can steel this area from you.
@@ -103,7 +103,7 @@ Then, you just have to replace the sample text by whatever you want.
 - Dependencies -
 ----------------
 
-CraftBukkit #677+
+CraftBukkit 677
 Permissions 2.7
 WorldGuard 4.0
 iConomy 4.6.5
@@ -126,9 +126,15 @@ https://github.com/Karnatos/CatchMe
 -------------
 - Changelog -
 -------------
+
+- Version 0.2.1
+* Fixed region loading bugs
+* Fixed minor bugs if plugin disabled (fail to load for any reason)
+
 - Version 0.2
 * Change catch area flags and group in a proper file (catchme/worlds/"my-world"/regions.yml)
 * Add infinite duration
 * Re-structured file README
+
 - Version 0.1
 * First Release
