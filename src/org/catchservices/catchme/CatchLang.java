@@ -16,7 +16,7 @@ public class CatchLang {
 
 	/* prefix */
 	public static final String prefix = "[CatchMe]";
-	public static final String version = "0.1";
+	public static final String version = "0.2.1";
 	
 	/* System messages  */
 	public static final String sys_puglinDisabled = "Plugin disabled";
