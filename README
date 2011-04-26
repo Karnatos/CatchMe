@@ -51,6 +51,18 @@ A catching area is defined with 'flags':
 * money-amount : money earned after each period (default value: 5)
 
 And 'catchgroups' which will be the only groups allowed to capture the area.
+
+You can define it  with ingame commands or manually.
+
+* In-game commands *
+
+To define it, just open the chat and write : '/cm addarea myarea'
+
+You'll have to set groups with : '/cm addgroup myarea mygroup1' '/cm addgroup myarea mygroup2' (groups must exist !)
+
+And if you want to change default options : '/cm flag catching-<flag> X' (see flags in the next part)
+
+* Editing config file *
  
 To define it, edit 'catchme/worlds/your-world/regions.yml' (replace 'your-world' by your current world name), or create it if it doesn't exist.
 The file is structured as follows :
