@@ -1,6 +1,6 @@
 -----------------------------------------
 - CatchMe - The Capture Region plugin -
-- Version: v0.2.1                         -
+- Version: v0.3.0                        -
 - By Scorpia 'Karnatos'                 -
 -----------------------------------------
 
@@ -20,6 +20,22 @@ Most datas are configurable.
 ------------
 - Features - 
 ------------
+
+************
+* Commands *
+************
+
+/cm info <area_name>
+/cm addarea <area_name>
+/cm removearea <area_name>
+/cm addgroup <area_name> <group_name>
+/cm removegroup <area_name> <group_name>
+/cm flag <area_name> <flag_name> <value>
+/cm save
+/cm list [#page]
+
+!!! Be Careful !!!
+If you use Permissions, you've to give the permission 'cachme.cm'
 
 *********************
 * The Catching Area *
@@ -95,18 +111,17 @@ Then, you just have to replace the sample text by whatever you want.
 - Notes -
 ---------
 
-- All file modifications need a reload of all plugins or a reboot to be taken in count.
-
 - If you have a problem with the YAML (files with .yml) syntax, check out this website http://yaml-online-parser.appspot.com/
 
 ----------------
 - Dependencies -
 ----------------
 
-CraftBukkit 677
+CraftBukkit 733
 Permissions 2.7
-WorldGuard 4.0
+WorldGuard 5.0
 iConomy 4.6.5
+Lists 0.0.1
 
 
 --------------------
@@ -126,6 +141,11 @@ https://github.com/Karnatos/CatchMe
 -------------
 - Changelog -
 -------------
+
+- Version 0.3.0
+* Add Lists integration
+* Add ingame commands
+* Add system messages & ingame messages
 
 - Version 0.2.1
 * Fixed region loading bugs

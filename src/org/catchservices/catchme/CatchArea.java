@@ -2,6 +2,7 @@ package org.catchservices.catchme;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.nijiko.coelho.iConomy.iConomy;
 import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.StateFlag.State;
 
 public class CatchArea {
 
@@ -20,8 +22,7 @@ public class CatchArea {
 	private Timer timer_catching;
 	private Timer timer_caugth;
 	private Integer actual_duration;
-	
-	private CatchRegions parent;
+	private boolean region_active;
 	
 	private Map<String, ArrayList<Player>> playerslist;
 	private String actual_group; 
@@ -31,7 +32,11 @@ public class CatchArea {
 	public static final Integer DEFAULT_TIME_CATCH = 30; // 30 seconds
 	public static final Integer DEFAULT_MONEY_AMOUNT = 5; // 5 Coins
 	
-	public CatchArea(CatchRegions parent, String name) {
+	@SuppressWarnings("unchecked")
+	private Map<Flag, Object> flags_map;
+	
+	@SuppressWarnings("unchecked")
+	public CatchArea(String name) {
 		
 		region_name = name;
 		this.duration = DEFAULT_DURATION;
@@ -42,10 +47,17 @@ public class CatchArea {
 		timer_catching = null;
 		actual_group = null;
 		actual_duration = 0;
-		
-		this.parent = parent;
+		region_active = false;
 		
 		playerslist = new HashMap<String, ArrayList<Player>>();
+		flags_map = new HashMap<Flag, Object>();
+	}
+	
+	public void setActive(State val) {
+		if(val == State.ALLOW)
+			this.region_active = true;
+		else
+			this.region_active = false;
 	}
 	
 	public void setDuration(int val) {
@@ -64,15 +76,19 @@ public class CatchArea {
 		this.money_amount = val;
 	}
 
-	public <T> void setFlag(Flag<T> flag, Object o) {
+	public <T> boolean setFlag(Flag<T> flag, Object o) {
 		
 		T val = flag.unmarshal(o);
 		if (val == null) {
 			// can't parse
-			return;
+			return false;
 		}
 		
-		if(flag.equals(CatchRegions.CATCHING_DURATION))
+		if(flag.equals(CatchRegions.CATCHING_AREA))
+		{
+			setActive((State)val);
+		}
+		else if(flag.equals(CatchRegions.CATCHING_DURATION))
 		{
 			setDuration((Integer)val);
 		}
@@ -92,12 +108,20 @@ public class CatchArea {
 		{
 			// Flag ignored
 		}
+		
+		flags_map.put(flag, val);
+		
+		return true;
 	}
 	
-	public void addGroup(String group) {
+	public boolean addGroup(String group) {
 		
-		if(!playerslist.containsKey(group))
-			playerslist.put(group, new ArrayList<Player>());
+		if(playerslist.containsKey(group))
+			return false;
+		
+		playerslist.put(group, new ArrayList<Player>());
+		
+		return true;
 	}
 
 	public void checkAddPlayer(Player player, String[] groups) {
@@ -112,16 +136,19 @@ public class CatchArea {
 				/* Add player */
 				players.add(player);
 				
-				if(actual_group != null) {
-					CatchLang.playerMess(player, CatchLang.get("enter-catchzone")+" "+region_name+" " 
-							+ CatchLang.get("controlled-by") + " " + actual_group);
-				}
-				else
-				{
-					CatchLang.playerMess(player, CatchLang.get("enter-catchzone")+" "+region_name);
-				}
+				if(region_active) {
 				
-				checkStartTime();
+					if(actual_group != null) {
+						CatchLang.playerMess(player, CatchLang.get("enter-catchzone")+" "+region_name+" " 
+								+ CatchLang.get("controlled-by") + " " + actual_group);
+					}
+					else
+					{
+						CatchLang.playerMess(player, CatchLang.get("enter-catchzone")+" "+region_name);
+					}
+					
+					checkStartTime();
+				}
 			}
 		}
 	}
@@ -181,7 +208,7 @@ public class CatchArea {
 		stopCaught();
 		
 		actualizeGroup();
-		CatchLang.broadMess(parent.parent.getServer(), actual_group+" "+CatchLang.get("now-controls")+" "+region_name);
+		CatchLang.broadMess(catchme.bukkit_server, actual_group+" "+CatchLang.get("now-controls")+" "+region_name);
 			
 		CatchLang.sysMess(CatchLang.sys_group+" "+actual_group+"' "+CatchLang.sys_control+" '"+region_name+"'");
 		
@@ -206,9 +233,9 @@ public class CatchArea {
 		CatchLang.sysMess(CatchLang.sys_addMoneyToGroup+" "+actual_group);
 		Player pl;
 		
-		for(String p : parent.getPlayersGroup(actual_group)) {
+		for(String p : CatchUnifiedGroups.getPlayersGroup(actual_group)) {
 			
-			pl = parent.parent.getServer().getPlayer(p);
+			pl = catchme.bukkit_server.getPlayer(p);
 			
 			if(pl != null) {
 				CatchLang.playerMess(pl, CatchLang.get("receive-money")+" "+money_amount
@@ -244,5 +271,70 @@ public class CatchArea {
 			timer_caugth.cancel();
 		timer_caugth = null;
 		actual_group = null;
+	}
+
+	public boolean removeGroup(String group_name) {
+		
+		if(!playerslist.containsKey(group_name))
+			return false;
+		
+		if(actual_group != null && actual_group.equals(group_name))
+			stopCaught();
+		
+		playerslist.remove(group_name);
+		
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Map<String, Object> getFlagsMap() {
+
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		for(Flag<T> f : flags_map.keySet()) {
+			
+			Object s = f.marshal((T) flags_map.get(f));
+			ret.put(f.getName(), s);
+		}
+		
+		return ret;
+	}
+
+	public List<String> getGroupsList() {
+
+		List<String> ret = new ArrayList<String>();
+		
+		ret.addAll(playerslist.keySet());
+		
+		return ret;
+	}
+
+	public String[] getInfo() {
+		
+		String[] ls = new String[2];
+		
+		String s = "";
+		s += region_name + " ( ";
+		if(region_active)
+			s += "ALLOW";
+		else
+			s += "DENY";
+		s += " | duration : " + duration;
+		s += " | money-amount : " + money_amount;
+		s += " | period : " + period;
+		s += " | time-catch : " + time_catch;
+		s += " ) ";
+		
+		ls[0] = s;
+		
+		s = "groups : ";
+		
+		for(String g : playerslist.keySet()) {
+			s += g + " ";
+		}
+		
+		ls[1] = s;
+		
+		return ls;
 	}
 }
