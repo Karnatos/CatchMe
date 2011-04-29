@@ -1,5 +1,7 @@
 package org.catchservices.catchme;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.bukkit.Server;
@@ -9,6 +11,7 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcteam.factions.Factions;
 
 import com.herocraftonline.dthielke.lists.Lists;
 import com.nijiko.coelho.iConomy.iConomy;
@@ -29,6 +32,7 @@ public class catchme extends JavaPlugin {
 	public static Lists plugin_lists = null;
 	public static WorldGuardPlugin plugin_worldguard = null;
 	public static Permissions plugin_perms = null;
+	public static Factions plugin_factions = null;
 	public static PermissionHandler plugin_permsHandler = null;
 	public static iConomy plugin_iconomy = null;
 	public static Server bukkit_server = null;
@@ -49,8 +53,30 @@ public class catchme extends JavaPlugin {
 		bukkit_server = getServer();
 	    pm = getServer().getPluginManager();
 
-		/* Code Enable CatchMe */
+	    /* Code Enable CatchMe */
 
+	    File fileW = new File(getDataFolder(), "worlds");
+	    if(!fileW.exists()) {
+	    	try {
+				fileW.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				CatchLang.sysMess(CatchLang.sys_cantCreateFile + " worlds");
+			}
+	    }
+	    
+	    File fileR = new File(getDataFolder(), "lang");
+	    if(!fileR.exists()) {
+	    	try {
+				fileR.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				CatchLang.sysMess(CatchLang.sys_cantCreateFile + " lang");
+			}
+	    }
+	    		
+	    /* Load WorldGuard */
+	    
         loadWorldGuardPlugin();
 	        
 	    if(!loadSuccess) {
@@ -61,6 +87,7 @@ public class catchme extends JavaPlugin {
 	    loadPermissionsPlugin();
 	    loadListsPlugin();
 	    loadiConomyPlugin();
+	    loadFactionsPlugin();
 	        
 	    /* Register commands */
 	    getCommand("cm").setExecutor(new CatchMeCommand(this));
@@ -87,7 +114,7 @@ public class catchme extends JavaPlugin {
 	       	catchregions = null;
 	    }
 	}
-	
+
 	public void loadWorldGuardPlugin() {
 		Plugin plugin =  pm.getPlugin("WorldGuard");
 		if (plugin != null) {
@@ -136,6 +163,20 @@ public class catchme extends JavaPlugin {
 		else
 		{
 			CatchLang.sysMess(CatchLang.sys_listsDisabled);
+		}
+	}
+	
+	private void loadFactionsPlugin() {
+		Plugin plugin = pm.getPlugin("Factions");
+		if (plugin != null) {
+			//if (plugin.isEnabled()) {
+				plugin_factions = (Factions) plugin;
+				CatchLang.sysMess(plugin_factions.getDescription().getName() + " " + plugin_factions.getDescription().getVersion() + " " + CatchLang.sys_found);
+			//}
+        }
+		else
+		{
+			CatchLang.sysMess(CatchLang.sys_factionsDisabled);
 		}
 	}
 	

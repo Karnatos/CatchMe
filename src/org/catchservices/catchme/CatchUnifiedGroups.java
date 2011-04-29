@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.mcteam.factions.FPlayer;
+import org.mcteam.factions.Faction;
 
 import com.herocraftonline.dthielke.lists.PrivilegedList;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -31,6 +33,17 @@ public class CatchUnifiedGroups {
 				grouplist.add(group);
 			}
 		}
+		
+		if(catchme.plugin_factions != null)
+		{
+			FPlayer fp = FPlayer.find(player.getName());
+			Faction f = fp.getFaction();
+			
+			if(f != null) {
+				grouplist.add(f.getTag());
+			}
+		}
+		
 		String[] ret = {};
 		ret = grouplist.toArray(ret);
 		
@@ -38,15 +51,12 @@ public class CatchUnifiedGroups {
 	}
 	
 	private static String[] getListsGroups(Player player) {
-		
+	  
 		List<String> groupsl = new ArrayList<String>();
 		
-		for(PrivilegedList pl : catchme.plugin_lists.getLists()) {
-			
-			if(pl.contains(player.getName())) {
-				
-				groupsl.add(pl.getName());
-			}
+		for(PrivilegedList pl : catchme.plugin_lists.getLists(player.getName())) {
+
+			groupsl.add(pl.getName());
 		}
 		
 		String[] groups = {};
@@ -68,6 +78,12 @@ public class CatchUnifiedGroups {
 			}
 		}
 		
+		if(catchme.plugin_factions != null) {
+			if(inFactionsGroup(p, actualGroup)) {
+				return true;
+			}
+		}
+		
 		return false;
 		
 	}
@@ -79,6 +95,21 @@ public class CatchUnifiedGroups {
 		if(pl != null) {
 			
 			return pl.contains(p.getName());
+		}
+		
+		return false;
+	}
+	
+	private static boolean inFactionsGroup(Player p, String actualGroup) {
+		
+		Faction f = Faction.findByTag(actualGroup);
+		
+		if(f != null) {
+			FPlayer fp = FPlayer.find(p.getName());
+
+			if(fp != null) {
+				return f.isInvited(fp);
+			}
 		}
 		
 		return false;
@@ -97,10 +128,31 @@ public class CatchUnifiedGroups {
 			playerslist.addAll(catchme.plugin_lists.getList(actualGroup).getUsers().keySet());
 		}
 		
+		if(catchme.plugin_factions != null) {
+			playerslist.addAll(getPlayersFactionsGroup(actualGroup));
+		}
+		
 		return playerslist;
 	}
+
+	private static List<String> getPlayersFactionsGroup(String actualGroup) {
+		
+		List<String> ret = new ArrayList<String>();
+		
+		Faction f = Faction.findByTag(actualGroup);
+		
+		if(f != null) {
+		
+			ArrayList <FPlayer> fp = f.getFPlayers();
+			for(FPlayer p : fp) {
+				ret.add(p.getName());
+			}
+		}
+		
+		return ret;
+	}
 	
-	public static List<String> getPlayersWorldGuardGroup(String actualGroup) {
+	private static List<String> getPlayersWorldGuardGroup(String actualGroup) {
 
 		List<String> ret = new ArrayList<String>();
 		/* Load catching areas from WorldGuard */

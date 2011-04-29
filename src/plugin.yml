@@ -1,6 +1,6 @@
 name: catchme
 main: org.catchservices.catchme.catchme
-version: 0.3.0
+version: 0.4.0
 author: Scorpia
 commands: 
     cm:

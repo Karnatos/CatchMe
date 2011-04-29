@@ -19,18 +19,20 @@ public class CatchArea {
 	private Integer period; /* Time in seconds before earning money */
 	private Integer money_amount; /* Amount of money earnt */
 	private Integer time_catch; /* Time before activing control */
+	private Boolean is_ffa; /* if the region is FFA or TEAM fight*/
 	private Timer timer_catching;
 	private Timer timer_caugth;
 	private Integer actual_duration;
 	private boolean region_active;
 	
 	private Map<String, ArrayList<Player>> playerslist;
-	private String actual_group; 
+	private String actual_control; 
 	
-	public static final Integer DEFAULT_DURATION = 12; // 12 periods
+	public static final Integer DEFAULT_DURATION = 1; // 1 period
 	public static final Integer DEFAULT_PERIOD = 15*60; // 15 minutes
 	public static final Integer DEFAULT_TIME_CATCH = 30; // 30 seconds
-	public static final Integer DEFAULT_MONEY_AMOUNT = 5; // 5 Coins
+	public static final Integer DEFAULT_MONEY_AMOUNT = 0; // 0 Coins
+	public static final Boolean DEFAULT_FFA = false;
 	
 	@SuppressWarnings("unchecked")
 	private Map<Flag, Object> flags_map;
@@ -43,9 +45,11 @@ public class CatchArea {
 		this.period = DEFAULT_PERIOD;
 		this.time_catch = DEFAULT_TIME_CATCH;
 		this.money_amount = DEFAULT_MONEY_AMOUNT;
+		this.is_ffa = DEFAULT_FFA;
+		
 		timer_caugth = null;
 		timer_catching = null;
-		actual_group = null;
+		actual_control = null;
 		actual_duration = 0;
 		region_active = false;
 		
@@ -75,6 +79,10 @@ public class CatchArea {
 	public void setMoneyAmount(int val) {
 		this.money_amount = val;
 	}
+	
+	public void setFFA(Boolean val) {
+		this.is_ffa = val;
+	}
 
 	public <T> boolean setFlag(Flag<T> flag, Object o) {
 		
@@ -103,6 +111,9 @@ public class CatchArea {
 		else if(flag.equals(CatchRegions.CATCHING_MONEY_AMOUNT))
 		{
 			setMoneyAmount((Integer)val);
+		}
+		else if(flag.equals(CatchRegions.CATCHING_FFA)) {
+			setFFA((Boolean)val);
 		}
 		else
 		{
@@ -138,9 +149,9 @@ public class CatchArea {
 				
 				if(region_active) {
 				
-					if(actual_group != null) {
+					if(actual_control != null) {
 						CatchLang.playerMess(player, CatchLang.get("enter-catchzone")+" "+region_name+" " 
-								+ CatchLang.get("controlled-by") + " " + actual_group);
+								+ CatchLang.get("controlled-by") + " " + actual_control);
 					}
 					else
 					{
@@ -170,8 +181,40 @@ public class CatchArea {
 			}
 		}
 	}
-
+	
 	public void checkStartTime() {
+		
+		if(is_ffa){
+			checkStartTimeFFA();
+		}
+		else
+		{
+			checkStartTimeGroup();
+		}
+	}
+	
+	public void checkStartTimeFFA() {
+		
+		int nb_players = 0;
+		
+		List<Player> sp = new ArrayList<Player>();
+		
+		for(ArrayList<Player> ap : playerslist.values()) {
+			sp.addAll(ap);
+		}
+		
+		nb_players = sp.size();
+		
+		if(timer_catching != null && nb_players > 1) {
+			stopCatching();
+		}
+		else if(timer_catching == null && nb_players == 1
+				&& (actual_control == null || sp.contains(catchme.bukkit_server.getPlayer(actual_control)))) {
+			startTimer();
+		}
+	}
+	
+	public void checkStartTimeGroup() {
 
 		Integer nbGroupsWithPlayers = 0;
 		String lastGroupWithPlayers = "";
@@ -185,7 +228,7 @@ public class CatchArea {
 		}
 		
 		if(timer_catching == null && nbGroupsWithPlayers == 1 
-				&& (actual_group == null || !lastGroupWithPlayers.equals(actual_group))) {
+				&& (actual_control == null || !lastGroupWithPlayers.equals(actual_control))) {
 			startTimer();
 		}
 		else if(timer_catching != null && nbGroupsWithPlayers != 1)
@@ -207,33 +250,77 @@ public class CatchArea {
 		
 		stopCaught();
 		
-		actualizeGroup();
-		CatchLang.broadMess(catchme.bukkit_server, actual_group+" "+CatchLang.get("now-controls")+" "+region_name);
+		actualizeControl();
+		CatchLang.broadMess(catchme.bukkit_server, actual_control+" "+CatchLang.get("now-controls")+" "+region_name);
 			
-		CatchLang.sysMess(CatchLang.sys_group+" "+actual_group+"' "+CatchLang.sys_control+" '"+region_name+"'");
+		CatchLang.sysMess(CatchLang.sys_group+" "+actual_control+"' "+CatchLang.sys_control+" '"+region_name+"'");
 		
 		actual_duration = 0;
 		timer_caugth = new Timer(true);
 		timer_caugth.schedule(new CatchTaskCaught(this), period*1000, period*1000);
 	}
 
-	public void actualizeGroup() {
+	public void actualizeControl() {
+		
+		if(is_ffa) {
+			actualizeControlFFA();
+		}
+		else
+		{
+			actualizeControlGroup();
+		}
+	}
 
+	public void actualizeControlFFA() {
+		
 		for(String key : playerslist.keySet()) {
 			ArrayList<Player> players = playerslist.get(key);
 			
 			if(players.size() > 0) {
-				actual_group = key;
+				actual_control = players.get(0).getName();
+			}
+		}		
+	}
+	
+	public void actualizeControlGroup() {
+		
+		for(String key : playerslist.keySet()) {
+			ArrayList<Player> players = playerslist.get(key);
+			
+			if(players.size() > 0) {
+				actual_control = key;
 			}
 		}	
 	}
-
-	public void addMoneyToPlayers() {
 	
-		CatchLang.sysMess(CatchLang.sys_addMoneyToGroup+" "+actual_group);
+	public void addMoneyToPlayers() {
+		
+		if(is_ffa) {
+			addMoneyToPlayersFFA();
+		}
+		else
+		{
+			addMoneyToPlayersGroups();
+		}		
+	}
+	
+	public void addMoneyToPlayersFFA() {
+		
+		if(money_amount <= 0 || catchme.plugin_iconomy == null)
+			return;
+		
+		iConomy.getBank().getAccount(actual_control).add(money_amount);
+	}
+	
+	public void addMoneyToPlayersGroups() {
+	
+		if(money_amount <= 0 || catchme.plugin_iconomy == null)
+			return;
+		
+		CatchLang.sysMess(CatchLang.sys_addMoneyToGroup+" "+actual_control);
 		Player pl;
 		
-		for(String p : CatchUnifiedGroups.getPlayersGroup(actual_group)) {
+		for(String p : CatchUnifiedGroups.getPlayersGroup(actual_control)) {
 			
 			pl = catchme.bukkit_server.getPlayer(p);
 			
@@ -270,7 +357,7 @@ public class CatchArea {
 		if(timer_caugth != null)
 			timer_caugth.cancel();
 		timer_caugth = null;
-		actual_group = null;
+		actual_control = null;
 	}
 
 	public boolean removeGroup(String group_name) {
@@ -278,7 +365,7 @@ public class CatchArea {
 		if(!playerslist.containsKey(group_name))
 			return false;
 		
-		if(actual_group != null && actual_group.equals(group_name))
+		if(actual_control != null && actual_control.equals(group_name))
 			stopCaught();
 		
 		playerslist.remove(group_name);
@@ -311,21 +398,23 @@ public class CatchArea {
 
 	public String[] getInfo() {
 		
-		String[] ls = new String[2];
-		
+		List<String> ls = new ArrayList<String>();
 		String s = "";
-		s += region_name + " ( ";
-		if(region_active)
-			s += "ALLOW";
-		else
-			s += "DENY";
-		s += " | duration : " + duration;
-		s += " | money-amount : " + money_amount;
-		s += " | period : " + period;
-		s += " | time-catch : " + time_catch;
-		s += " ) ";
 		
-		ls[0] = s;
+		ls.add(region_name);
+		
+		if(region_active)
+			s = "- ALLOW";
+		else
+			s = "- DENY";
+		
+		ls.add(s);
+		
+		ls.add("- " + CatchRegions.CATCHING_DURATION.getName() + " " + duration);
+		ls.add("- " + CatchRegions.CATCHING_MONEY_AMOUNT.getName() + " " + money_amount);		
+		ls.add("- " + CatchRegions.CATCHING_PERIOD.getName() + " " + period);
+		ls.add("- " + CatchRegions.CATCHING_TIME_CATCH.getName() + " " + time_catch);
+		ls.add("- " + CatchRegions.CATCHING_FFA.getName() + " " + is_ffa);
 		
 		s = "groups : ";
 		
@@ -333,8 +422,19 @@ public class CatchArea {
 			s += g + " ";
 		}
 		
-		ls[1] = s;
+		ls.add(s);
 		
-		return ls;
+		s = "controlled by : ";
+		
+		if(actual_control != null) {
+			s += actual_control;
+		}
+		
+		ls.add(s);
+		
+		String[] ret = {};
+		ret = ls.toArray(ret);
+		
+		return ret;
 	}
 }

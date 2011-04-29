@@ -1,6 +1,6 @@
 -----------------------------------------
 - CatchMe - The Capture Region plugin -
-- Version: v0.3.0                        -
+- Version: v0.4.0                        -
 - By Scorpia 'Karnatos'                 -
 -----------------------------------------
 
@@ -45,14 +45,16 @@ If you use Permissions, you've to give the permission 'cachme.cm'
 
 A catching area is defined with 'flags':
 
-* duration : number of periods before becoming neutral(default value: 12)
+* duration : number of periods before becoming neutral(default value: 1)
 * period : delay in seconds between each earn money (default value: 900)
 * time-catch : delay in seconds before capturing the area (default value: 30)
-* money-amount : money earned after each period (default value: 5)
+* money-amount : money earned after each period (default value: 0)
+* ffa : if set true, groups'players are allowed to capture the area for their own profit.
 
 And 'catchgroups' which will be the only groups allowed to capture the area.
 
 You can define it  with ingame commands or manually.
+
 
 * In-game commands *
 
@@ -62,20 +64,31 @@ You'll have to set groups with : '/cm addgroup myarea mygroup1' '/cm addgroup my
 
 And if you want to change default options : '/cm flag catching-<flag> X' (see flags in the next part)
 
+
+* Groups *
+
+CatchMe integrate 'Lists', 'Permissions' and 'Factions'. 
+
+You can specify as a group, any group created via those plugins.
+
+Warning : with Factions, if you change the tag of a faction, the modification will not be applied in catchgroups.
+
+
 * Editing config file *
  
 To define it, edit 'catchme/worlds/your-world/regions.yml' (replace 'your-world' by your current world name), or create it if it doesn't exist.
 The file is structured as follows :
 regions:
   myWorldGuardRegion1:
-    flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X}
+    flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X, catching-ffa: Z}
     catchgroups: [myGroup1, myGroup2]
   myWorldGuardRegion2:
-    flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X}
+    flags: {catching-area: Y, catching-duration: X, catching-period: X, catching-time-catch: X, catching-money-amount: X, catching-ffa: Z}
     catchgroups: [myGroup1, myGroup3, myGroup4]
 
-Y is 'allow' or 'deny'
+Y is 'allow' or 'deny'.
 X is a positive integer value.
+Z is 'on/true/yes/1' or 'off/false/no/0'.
 If you don't specify one of theses flags, the default value will be used.
 
 For 'catching-duration', if you use 0 as value, the duration will be infinite.
@@ -89,10 +102,11 @@ regions:
     flags: {catching-area: deny, catching-duration: 30}
 
 In this example, the region 'totoReg' will be an enabled catching area with these caracteristics :
-duration: 12 periods (default)
+duration: 1 periods (default)
 period: 10 seconds
 time-catch: 5 seconds
-money-amount: 5 (default)
+money-amount: 0 (default)
+ffa : false (default)
 
 The region 'titi' will not be a catching area because of 'catching-area: deny'.
 
@@ -129,18 +143,18 @@ Then, you just have to replace the sample text by whatever you want.
 - Dependencies -
 ----------------
 
-CraftBukkit 733
+CraftBukkit 733 (mandatory)
+WorldGuard 5.0 (mandatory)
 Permissions 2.7
-WorldGuard 5.0
 iConomy 4.6.5
-Lists 0.0.1
-
+Lists 0.1.0
+Factions 1.1.7
 
 --------------------
 - Download CatchMe -
 --------------------
 
-https://github.com/Karnatos/CatchMe/tree/master/build030
+https://github.com/Karnatos/CatchMe/tree/master/build040
 
 
 --------------------
@@ -153,6 +167,14 @@ https://github.com/Karnatos/CatchMe
 -------------
 - Changelog -
 -------------
+
+- Version 0.4.0
+* Add Factions integration
+* Add FFA flag
+* Remove message if money-amount is 0
+* Change default values : 
+	money-amount from 5 to 0
+	duration from 12 to 1
 
 - Version 0.3.0
 * Add Lists integration

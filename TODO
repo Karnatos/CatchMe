@@ -1,7 +1,11 @@
-TODO 19/04/11
+TODO 29/04/11
+
+Priority
+
 - Add decreasing time depending on team's players number
-- Add internal group system => Lists Plugin DONE
+- Add area catpure effects (which ?)
+
+Non priority
+
+- Add dependencies system (an area can be captured only if related areas are already captured)
 - Add chunk as region alternative
-- Add area reward's effects selectable
-- Improve message traduction
-- Add dependencies system

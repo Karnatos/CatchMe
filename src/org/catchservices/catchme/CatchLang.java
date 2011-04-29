@@ -16,7 +16,7 @@ public class CatchLang {
 
 	/* prefix */
 	public static final String prefix = "[CatchMe]";
-	public static final String version = "0.3.0";
+	public static final String version = "0.4.0";
 	
 	/* System messages  */
 	public static final String sys_pluginDisabled = "Plugin disabled";
@@ -24,6 +24,7 @@ public class CatchLang {
 	public static final String sys_permissionsDisabled = "Permissions disabled, Permissions groups not used in CatchMe";
 	public static final String sys_iconomyDisabled = "Permissions disabled, money system not used in CatchMe";;
 	public static final String sys_listsDisabled = "Lists disabled, Lists groups not used in CatchMe";
+	public static final String sys_factionsDisabled = "Factions disabled, Factions groups not used in CatchMe";
 	public static final String sys_catchmeEnabled = " v"+version+" Enabled";	
 	
 	public static final String sys_failCatchConfigRegion = "Failed to load CatchMe region config file";
@@ -42,6 +43,7 @@ public class CatchLang {
 	public static final String sys_updatedSuccess = "updated with success";
 	public static final String sys_errorSavingConfig = "Error saving config";
 	public static final String sys_areaFoundIn = "area(s) found in";
+	public static final String sys_cantCreateFile = "Can't create file";
 	
 	/* Users messages */
 	public static final String usr_receiveMoney = "You receive";

@@ -1,0 +1,4 @@
+regions:
+  myRegion:
+    flags: {catching-area: allow, catching-duration: 1, catching-period: 20, catching-time-catch: 5, catching-money-amount: 0, catching-ffa: on}
+    catchgroups: [myGroup1, myGroup2]

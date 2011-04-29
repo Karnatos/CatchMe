@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.IntegerFlag;
 import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
@@ -31,9 +32,11 @@ public class CatchRegions {
 	public static final IntegerFlag CATCHING_TIME_CATCH = new IntegerFlag("catching-time-catch");
 	public static final IntegerFlag CATCHING_PERIOD = new IntegerFlag("catching-period");
 	public static final IntegerFlag CATCHING_MONEY_AMOUNT = new IntegerFlag("catching-money-amount");
+	public static final BooleanFlag CATCHING_FFA = new BooleanFlag("catching-ffa");
 	
 	public static final Flag<?>[] flagsCatchList = new Flag<?>[] {
-		CATCHING_AREA, CATCHING_DURATION, CATCHING_DURATION, CATCHING_TIME_CATCH, CATCHING_PERIOD, CATCHING_MONEY_AMOUNT
+		CATCHING_AREA, CATCHING_DURATION, CATCHING_DURATION, CATCHING_TIME_CATCH, CATCHING_PERIOD, CATCHING_MONEY_AMOUNT,
+		CATCHING_FFA
 	};
 	
 	public catchme parent;
@@ -222,8 +225,9 @@ public class CatchRegions {
 		CatchArea area = catchareas.get(world).get(region);
 
 		String[] info = area.getInfo();
-		p.sendMessage(info[0]);
-		p.sendMessage(info[1]);
+		for(int i = 0; i < info.length; i++) {
+			p.sendMessage(info[i]);
+		}
 		
 		return true;
 	}
